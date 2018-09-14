@@ -439,12 +439,11 @@ window.addEventListener('load', event => {
     if (results.version) {
       init(results);
       startup();
-      chrome.runtime.sendMessage('PopupWindow@ettoolong', {
-        action: 'ack'}, response => {
+      chrome.runtime.sendMessage('PopupWindow@ettoolong', {action: 'ack'}, response => {
         if(response && response.result === 'ok') {
-          console.log('ok');
+          // console.log('ok');
         } else {
-          console.log('failed');
+          // console.log('failed');
           let notes = Array.from(document.querySelectorAll('.note'));
           for(let note of notes) {
             note.classList.remove('hidden');
