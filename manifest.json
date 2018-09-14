@@ -1,0 +1,30 @@
+{
+  "description": "__MSG_extDescription__",
+  "manifest_version": 2,
+  "name": "__MSG_extName__",
+  "version": "0.0.5",
+  "homepage_url": "https://github.com/ettoolong/PopupWindow",
+  "applications": {
+    "gecko": {
+      "id": "WebAppMode@ettoolong",
+      "strict_min_version": "53.0"
+    }
+  },
+  "developer": {
+    "name": "Ett Chung",
+    "url": "https://github.com/ettoolong/WebAppMode"
+  },
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "permissions": [
+    "storage",
+    "tabs"
+  ],
+  "default_locale": "en",
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true,
+    "browser_style": true
+  }
+}

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" type="text/css" href="options.css"/>
+    <script type="text/javascript" src="options.js"></script>
+  </head>
+  <body>
+    <!--panel url - start-->
+    <div class="note warning hidden">
+      <label data-l10n-id="needOtherAddon">**You need install and enable another add-on 'Popup Window' before you start using this add-on:</label>
+    </div>
+    <div class="note hidden">
+      <a href='https://addons.mozilla.org/firefox/addon/popup-window/' data-l10n-id="installPopupWindow">https://addons.mozilla.org/firefox/addon/popup-window/</a>
+    </div>
+    <div class="content" id="panel-category-url">
+      <div class="groupTitle" data-l10n-id="tabsUrl">Match patterns</div>
+      <div>
+        <ul type="listBox" class="listBox inline" id="urlFilterList">
+          <li class="tableHeader tableRow">
+            <div class="cellEnabled"></div>
+            <div class="cellUrl" data-l10n-id="labelUrlFilterUrl">Match pattern</div>
+            <!-- <div class="cellAction" data-l10n-id="labelUrlFilterConvert">Action</div> -->
+            <div id="btnAddUrlFilter" class="cellAdd"></div>
+            <div id="btnMoveUp" class="cellMoveUp"></div>
+            <div id="btnMoveDown" class="cellMoveDown"></div>
+          </li>
+          <li class="tableFooter tableRow"><div class="cellUrl"></div></li>
+        </ul>
+      </div>
+
+    </div>
+    <!--panel url - end-->
+
+    <!--editor - start-->
+    <div id="screenMask" class="screenMask" >
+    </div>
+    <div id="urlFilterEditor" class="urlFilterEditor">
+      <div id="addNewUrlFilter">
+        <ul class="inline">
+          <li class="inline">
+            <label class="labelText" data-l10n-id="labelUrlFilterUrlColon">URL: </label>
+          </li>
+          <li class="inline">
+            <input type="text" id="newFilterUrl" size="40">
+          </li>
+        </ul>
+        <ul class="inline">
+          <li>
+              <label class="labelText" data-l10n-id="urlFilterMessage">You can use wildcard (*) in match pattern.</label>
+          </li>
+        </ul>
+        <ul class="inline">
+            <li>
+                <label class="labelText" data-l10n-id="urlFilterExample">For example: https://github.com/*</label>
+            </li>
+        </ul>
+      </div>
+
+      <button id="btnAcceptFilter" dlgName="urlFilterEditor" class="dialogButton btnAccept" data-l10n-id="btnOK">OK</button>
+      <button dlgName="urlFilterEditor" class="dialogButton btnCancel" data-l10n-id="btnCancel">Cancel</button>
+    </div>
+    <!--editor - end-->
+  </body>
+</html>

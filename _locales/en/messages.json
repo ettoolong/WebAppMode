@@ -1,0 +1,54 @@
+{
+  "extName": {
+    "message": "Web App Mode",
+    "description": ""
+  },
+  "extDescription": {
+    "message": "Auto pop-up tab to standalone window by URL match patterns.",
+    "description": ""
+  },
+  "optionPageTitle": {
+    "message": "Web App Mode Preferences",
+    "description": ""
+  },
+  "tabsUrl": {
+    "message": "Match patterns",
+    "description": ""
+  },
+  "labelUrlFilterUrl": {
+    "message": "Match pattern",
+    "description": ""
+  },
+  "labelUrlFilterConvert": {
+    "message": "Action",
+    "description": ""
+  },
+  "labelUrlFilterUrlColon": {
+    "message": "Match pattern:",
+    "description": ""
+  },
+	"urlFilterMessage": {
+		"message": "You can use wildcard (*) in match pattern.",
+		"description": ""
+	},
+	"urlFilterExample": {
+		"message": "For example: https://github.com/*",
+		"description": ""
+	},
+  "btnOK": {
+    "message": "OK",
+    "description": ""
+  },
+  "btnCancel": {
+    "message": "Cancel",
+    "description": ""
+  },
+  "needOtherAddon": {
+    "message": "**You need install and enable another add-on 'Popup Window' before you start using this add-on:",
+    "description": ""
+  },
+  "installPopupWindow": {
+    "message": "https://addons.mozilla.org/firefox/addon/popup-window/",
+    "description": ""
+  }
+}
