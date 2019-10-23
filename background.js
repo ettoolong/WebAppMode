@@ -87,12 +87,16 @@ const urlFilter = url => {
 };
 
 chrome.tabs.onUpdated.addListener( (tabId, changeInfo, tabInfo) => {
+  console.log(tabId, tabInfo)
   if(changeInfo.url) {
-    if(urlFilter(changeInfo.url) ) {
-      console.log('pop-up window');
-      chrome.runtime.sendMessage('PopupWindow@ettoolong', {
-          action: 'popupWindow',
-          tabId: tabId
+    if(urlFilter(changeInfo.url)) {
+      chrome.windows.get(tabInfo.windowId, win => {
+        if (win.type === 'normal') {
+          chrome.runtime.sendMessage('PopupWindow@ettoolong', {
+            action: 'popupWindow',
+            tabId: tabId
+          });
+        }
       });
     }
   }

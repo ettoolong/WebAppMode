@@ -249,15 +249,13 @@ input[type=number] ~ .line{
 }
 
 div.cellConvert,
-div.cellUrl,
-/* div.cellAction */
+div.cellUrl
 {
   border-right: 5px solid transparent;
 }
 
 .tableHeader div.cellConvert,
-.tableHeader div.cellUrl,
-/* .tableHeader div.cellAction */
+.tableHeader div.cellUrl
 {
   border-right: 1px solid rgb(193, 193, 193);
 }
@@ -337,7 +335,7 @@ li.tableRow:not([selected=true]):nth-child(odd):hover:not(.tableHeader) {
   background-color: rgb(210, 240, 250);
 }
 
-.tableRow:hover:not(.tableHeader) div.cellEdit{
+.tableRow:not(.tableHeader) div.cellEdit:hover{
   background-image: url("./icon/edit-hover.svg");
   opacity: 0.8;
   cursor: default;
@@ -352,6 +350,11 @@ li.tableRow:not([selected=true]):nth-child(odd):hover:not(.tableHeader) {
 }
 .tableRow[selected=true]:not(.tableHeader) div.cellDelete{
   background-image: url("./icon/delete.svg");
+  cursor: default;
+}
+.tableRow[selected=true]:not(.tableHeader) div.cellDelete:hover{
+  background-image: url("./icon/delete.svg");
+  opacity: 0.8;
   cursor: default;
 }
 
