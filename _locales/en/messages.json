@@ -19,11 +19,19 @@
     "message": "Match pattern",
     "description": ""
   },
+  "labelUrlFilterPosition": {
+    "message": "Window position",
+    "description": ""
+  },
+  "labelUrlFilterSize": {
+    "message": "Window size",
+    "description": ""
+  },
   "labelUrlFilterConvert": {
     "message": "Action",
     "description": ""
   },
-  "labelUrlFilterUrlColon": {
+  "labelMatchPattern": {
     "message": "Match pattern:",
     "description": ""
   },
@@ -35,6 +43,58 @@
 		"message": "For example: https://github.com/*",
 		"description": ""
 	},
+  "defaultPosition": {
+    "message": "Window position",
+    "description": ""
+  },
+  "center": {
+    "message": "Center",
+    "description": ""
+  },
+  "topLeft": {
+    "message": "Top left corner",
+    "description": ""
+  },
+  "bottomLeft": {
+    "message": "Bottom left corner",
+    "description": ""
+  },
+  "topRight": {
+    "message": "Top right corner",
+    "description": ""
+  },
+  "bottomRight": {
+    "message": "Bottom right corner",
+    "description": ""
+  },
+  "custom": {
+    "message": "Custom position",
+    "description": ""
+  },
+  "windowPositionLeft": {
+    "message": "Left",
+    "description": ""
+  },
+  "windowPositionTop": {
+    "message": "Top",
+    "description": ""
+  },
+  "default": {
+    "message": "Default",
+    "description": ""
+  },
+  "defaultSize": {
+    "message": "Window size",
+    "description": ""
+  },
+  "windowWidth": {
+    "message": "Width",
+    "description": ""
+  },
+  "windowHeight": {
+    "message": "Height",
+    "description": ""
+  },
   "btnOK": {
     "message": "OK",
     "description": ""

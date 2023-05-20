@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <?xml version="1.0" encoding="utf-8"?>
 <html>
   <head>
@@ -20,7 +21,8 @@
           <li class="tableHeader tableRow">
             <div class="cellEnabled"></div>
             <div class="cellUrl" data-l10n-id="labelUrlFilterUrl">Match pattern</div>
-            <!-- <div class="cellAction" data-l10n-id="labelUrlFilterConvert">Action</div> -->
+            <div class="cellPosition" data-l10n-id="labelUrlFilterPosition">Match pattern</div>
+            <div class="cellSize" data-l10n-id="labelUrlFilterSize">Match pattern</div>
             <div id="btnAddUrlFilter" class="cellAdd"></div>
             <div id="btnMoveUp" class="cellMoveUp"></div>
             <div id="btnMoveDown" class="cellMoveDown"></div>
@@ -28,7 +30,6 @@
           <li class="tableFooter tableRow"><div class="cellUrl"></div></li>
         </ul>
       </div>
-
     </div>
     <!--panel url - end-->
 
@@ -36,25 +37,41 @@
     <div id="screenMask" class="screenMask" >
     </div>
     <div id="urlFilterEditor" class="urlFilterEditor">
-      <div id="addNewUrlFilter">
-        <ul class="inline">
-          <li class="inline">
-            <label class="labelText" data-l10n-id="labelUrlFilterUrlColon">URL: </label>
-          </li>
-          <li class="inline">
-            <input type="text" id="newFilterUrl" size="40">
-          </li>
-        </ul>
-        <ul class="inline">
-          <li>
-              <label class="labelText" data-l10n-id="urlFilterMessage">You can use wildcard (*) in match pattern.</label>
-          </li>
-        </ul>
-        <ul class="inline">
-            <li>
-                <label class="labelText" data-l10n-id="urlFilterExample">For example: https://github.com/*</label>
-            </li>
-        </ul>
+      <div id="addNewUrlFilter" class="addNewUrlFilter">
+        <div class="section">
+          <label class="labelText" data-l10n-id="labelMatchPattern">Match pattern:</label>
+          <input type="text" id="newFilterUrl" size="40">
+          <label class="labelText" data-l10n-id="urlFilterMessage">You can use wildcard (*) in match pattern.</label>
+          <label class="labelText" data-l10n-id="urlFilterExample">For example: https://github.com/*</label>
+        </div>
+
+        <div class="section">
+          <div class="row">
+            <label data-l10n-id="defaultPosition">Default pop-up window position</label>
+            <select id="defaultPosition" type="option">
+              <option value="0" data-l10n-id="center">Center</option>
+              <option value="1" data-l10n-id="topLeft">Top left corner</option>
+              <option value="2" data-l10n-id="bottomLeft">Bottom left corner</option>
+              <option value="3" data-l10n-id="topRight">Top right corner</option>
+              <option value="4" data-l10n-id="bottomRight">Bottom right corner</option>
+              <option value="5" data-l10n-id="custom">Custom</option>
+            </select>
+            <label class="windowPosition" data-l10n-id="windowPositionLeft">Left</label>
+            <input class="windowPosition" type="number" id="windowPositionLeft" min="0">
+            <label class="windowPosition" data-l10n-id="windowPositionTop">Top</label>
+            <input class="windowPosition" type="number" id="windowPositionTop" min="0">
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="row">
+            <label data-l10n-id="defaultSize">Default pop-up window size</label>
+            <label class="windowSize" data-l10n-id="windowWidth">Window width</label>
+            <input class="windowSize" type="number" id="windowWidth" min="30">
+            <label class="windowSize" data-l10n-id="windowHeight">Window height</label>
+            <input class="windowSize" type="number" id="windowHeight" min="30">
+          </div>
+        </div>
       </div>
 
       <button id="btnAcceptFilter" dlgName="urlFilterEditor" class="dialogButton btnAccept" data-l10n-id="btnOK">OK</button>

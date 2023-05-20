@@ -51,7 +51,14 @@ const tryConnection = () => {
     if(response && response.result === 'ok') {
       chrome.tabs.query({windowType:'normal'}, tabs => {
         for (let tab of tabs) {
-          urlFilter(tab.url);
+          const action = urlFilter(tab.url)
+          if(action) {
+            chrome.runtime.sendMessage('PopupWindow@ettoolong', {
+                action: 'popupWindow',
+                tabId: tab.id,
+                ...action,
+            });
+          }
         }
       });
     } else {
@@ -68,36 +75,87 @@ window.addEventListener('DOMContentLoaded', event => {
   setTimeout(tryConnection, 1000);
 });
 
+const createAction = setting => {
+  if (setting.position === undefined && setting.size === undefined) {
+    return {}
+  }
+  const position = setting.position ?? '0'
+  const size = setting.size ?? { width: 30, height: 30 }
+  const action = {}
+
+  let screen = window.screen;
+  let width = size.width;
+  let height = size.height;
+
+  let top = screen.availTop !== undefined ? screen.availTop: screen.top;
+  let left = screen.availLeft !== undefined ? screen.availLeft: screen.left;
+  let sTop = top;
+  let sLeft = left;
+  let sWidth = screen.availWidth !== undefined ? screen.availWidth: screen.width;
+  let sHeight = screen.availHeight !== undefined ? screen.availHeight: screen.height;
+  if (position === '0') {
+    top = sTop + Math.round((sHeight - height)/2);
+    left = sLeft + Math.round((sWidth - width)/2);
+  }
+  else if (position === '1') {
+    // DO NOTHING
+  }
+  else if (position === '2' || position === '3' || position === '4') {
+    if (position === '2' || position === '4') {
+      top = sTop + sHeight - height;
+      if(top < sTop)
+        top = sTop;
+    }
+    if (position === '3' || position === '4') {
+      left = sLeft + sWidth - width;
+      if(left < sLeft)
+        left = sLeft;
+    }
+  }
+  else {
+    top = position.top;
+    left = position.left;
+  }
+
+  action.top = top
+  action.left = left
+  action.width = size.width
+  action.height = size.height
+  return action
+}
+
 const urlFilter = url => {
   if(preferences.urlFilterList) {
-    for (let filter of preferences.urlFilterList) {
+    for (const filter of preferences.urlFilterList) {
       if (filter.url.includes('*')) {
-        let p = filter.url.replace(/(\W)/ig, '\\$1').replace(/\\\*/ig, '*').replace(/\*/ig, '.*');
-        let re = new RegExp('^' + p + '$', 'ig');
+        const p = filter.url.replace(/(\W)/ig, '\\$1').replace(/\\\*/ig, '*').replace(/\*/ig, '.*');
+        const re = new RegExp('^' + p + '$', 'ig');
         if (url.match(re) !== null) {
-          return true;
+          return createAction(filter);
         }
       }
       else if (url === filter.url) {
-        return true;
+        return createAction(filter);
       }
     }
   }
-  return false;
+  return null;
 };
 
 chrome.tabs.onUpdated.addListener( (tabId, changeInfo, tabInfo) => {
-  console.log(tabId, tabInfo)
   if(changeInfo.url) {
-    if(urlFilter(changeInfo.url)) {
-      chrome.windows.get(tabInfo.windowId, win => {
-        if (win.type === 'normal') {
+    chrome.windows.get(tabInfo.windowId, win => {
+      if (win.type === 'normal') {
+        const action = urlFilter(changeInfo.url)
+        if(action) {
+          console.log('pop-up window');
           chrome.runtime.sendMessage('PopupWindow@ettoolong', {
             action: 'popupWindow',
-            tabId: tabId
+            tabId: tabId,
+            ...action,
           });
         }
-      });
-    }
+      }
+    });
   }
 });

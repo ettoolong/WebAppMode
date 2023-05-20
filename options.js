@@ -7,20 +7,40 @@ let screenMask;
 let urlFilterEditor;
 let currentPrefs = {};
 let l10n = {};
-//let flagmap = {};
+const positionMapping = {
+  0: 'center',
+  1: 'topLeft',
+  2: 'bottomLeft',
+  3: 'topRight',
+  4: 'bottomRight',
+  5: 'custom',
+}
 
 const checkFilterEditorInput = () => {
-  //console.log('checkFilterEditorInput');
-  // let checkAny = false;
-  // let radios = Array.from(document.getElementById('urlFilterAction').querySelectorAll('input[name=urlFilterAction]'));
-  // for(let radio of radios) {
-  //   if(radio.checked) {
-  //     checkAny = true;
-  //     break;
-  //   }
-  // }
-  if(document.getElementById('newFilterUrl').value !== '') {
-    document.getElementById('btnAcceptFilter').disabled = false;
+  let disabled = false
+
+  if(document.getElementById('newFilterUrl').value.trim() === '') {
+    disabled = true
+  }
+
+  if(document.getElementById('defaultPosition').value === '5') {
+    const left = Number(document.getElementById('windowPositionLeft').value)
+    const top = Number(document.getElementById('windowPositionTop').value)
+    if (typeof left !== 'number' || left < 0 || typeof top !== 'number' || top < 0) {
+      disabled = true
+    }
+  }
+
+  const width = Number(document.getElementById('windowWidth').value)
+  const height = Number(document.getElementById('windowHeight').value)
+  if (typeof width !== 'number' || width < 30 || typeof height !== 'number' || height < 30) {
+    disabled = true
+  }
+
+  if (disabled) {
+    document.getElementById('btnAcceptFilter').setAttribute('disabled', 'true');
+  } else {
+    document.getElementById('btnAcceptFilter').removeAttribute('disabled');
   }
 }
 
@@ -105,20 +125,33 @@ const hideScreenMask = () => {
   document.body.style.overflowY = 'scroll';
 }
 
-const showUrlFilterEditor = (url, action, index) => {
+const showUrlFilterEditor = (url, position = '0', size = {width: 500, height: 400}, index) => {
   screenMask.style.display = 'block';
   urlFilterEditor.style.display = 'block';
   document.body.style.height = document.documentElement.clientHeight + 'px';
   document.body.style.overflowY = 'hidden';
-  let newFilterUrl = document.getElementById('newFilterUrl');
-  newFilterUrl.value = url;
-  newFilterUrl.setAttribute('index', index);
-  let radios = Array.from(document.querySelectorAll('input[name=urlFilterAction]'));
-  for(let radio of radios) {
-    radio.checked = (parseInt(radio.getAttribute('value')) === action);
+  const urlNode = document.getElementById('newFilterUrl');
+  urlNode.value = url;
+  urlNode.setAttribute('index', index);
+
+  const positionNode = document.getElementById('defaultPosition');
+  if (['0', '1', '2', '3', '4'].includes(position)) {
+    positionNode.value = position;
+  } else {
+    positionNode.value = '5';
   }
-  document.getElementById('newFilterUrl').focus();
-  checkFilterEditorInput();
+  const positionLeftNode = document.getElementById('windowPositionLeft');
+  positionLeftNode.value = 0
+  const positionTopNode = document.getElementById('windowPositionTop');
+  positionTopNode.value = 0
+
+  const widthNode = document.getElementById('windowWidth');
+  widthNode.value = size.width
+  const heightNode = document.getElementById('windowHeight');
+  heightNode.value = size.height
+
+  urlNode.focus();
+  onDefaultPositionChange();
 }
 
 const clickOnRowItem = (event) => {
@@ -138,19 +171,19 @@ const clickOnRowButton = (event) => {
   event.stopPropagation();
   event.preventDefault();
   let button = event.currentTarget;
-  if(button.nodeName === 'LI')
+  if(button.nodeName === 'LI') {
     button = button.querySelector('.cellEdit');
+  }
   if(button.classList.contains('cellEdit')) {
-    let target = button.parentNode.parentNode.getAttribute('id');
+    const target = button.parentNode.parentNode.getAttribute('id');
     if(target === 'urlFilterList') {
-      let index = parseInt(button.parentNode.getAttribute('index'));
-      let url = button.parentNode.firstChild.textContent;
-      let action = currentPrefs.urlFilterList[index].action;
-      showUrlFilterEditor(url, action, index);
+      const index = parseInt(button.parentNode.getAttribute('index'));
+      const value = currentPrefs.urlFilterList[index];
+      showUrlFilterEditor(value.url, value.position, value.size, index);
     }
   }
   else if(button.classList.contains('cellDelete')){
-    let target = button.parentNode.parentNode.getAttribute('id');
+    const target = button.parentNode.parentNode.getAttribute('id');
     if(target === 'urlFilterList') {
       let urlFilterList = document.getElementById('urlFilterList');
       let node = button.parentNode;
@@ -250,16 +283,20 @@ const moveUrlFilterPos = (shift) => {
   }
 }
 
-const modefyUrlFilter = (url, action, index) => {
+const modefyUrlFilter = (url, position, size, index) => {
   let urlFilterList = document.getElementById('urlFilterList');
   let row = urlFilterList.children[index+1];
   row.children[0].textContent = url;
-  // row.children[1].textContent = '';//flagmap[action];
+  row.children[1].textContent = ['0', '1', '2', '3', '4'].includes(position) ?
+    chrome.i18n.getMessage(positionMapping[position]) :
+    `${chrome.i18n.getMessage('windowPositionLeft')}: ${position.left}, ${chrome.i18n.getMessage('windowPositionTop')}: ${position.top}`;
+  row.children[2].textContent = `${size.width} x ${size.height}`;
   currentPrefs.urlFilterList[index].url = url;
-  currentPrefs.urlFilterList[index].action = action;
+  currentPrefs.urlFilterList[index].position = position;
+  currentPrefs.urlFilterList[index].size = size;
 }
 
-const addUrlFilter = (url, action, index) => {
+const addUrlFilter = (url, position, size, index) => {
   let urlFilterList = document.getElementById('urlFilterList');
   let li = document.createElement('li');
   if(index === undefined)
@@ -267,7 +304,16 @@ const addUrlFilter = (url, action, index) => {
   li.setAttribute('index', index);
   li.classList.add('tableRow');
   addRowItemCell(li, ['cellUrl'], url);
-  // addRowItemCell(li, ['cellAction'], '');
+  addRowItemCell(
+    li,
+    ['cellPosition'],
+    position ? (['0', '1', '2', '3', '4'].includes(position) ?
+      chrome.i18n.getMessage(positionMapping[position]) :
+      `${chrome.i18n.getMessage('windowPositionLeft')}: ${position.left}, ${chrome.i18n.getMessage('windowPositionTop')}: ${position.top}`) :
+    ''
+  );
+  addRowItemCell(li, ['cellSize'], size ? `${size.width} x ${size.height}` : '');
+
   let edit = addRowItemCell(li, ['cellEdit','cellButton'], null, clickOnRowButton);
   edit.setAttribute('custom', true);
   addRowItemCell(li, ['cellDelete','cellButton'], null, clickOnRowButton);
@@ -279,7 +325,6 @@ const addUrlFilter = (url, action, index) => {
 }
 
 const startup = () => {
-  console.log('startup');
   tableRowButtons = Array.from(document.querySelectorAll('.cellButton'));
   tableRowButtons.forEach(tableRowButton => {
     tableRowButton.addEventListener('click', clickOnRowButton, true);
@@ -301,23 +346,25 @@ const startup = () => {
     btn.addEventListener('click', event => {
       let dlgName = event.target.getAttribute('dlgName');
       if(dlgName === 'urlFilterEditor') {
-        let newFilterUrl = document.getElementById('newFilterUrl');
-        let index = parseInt(newFilterUrl.getAttribute('index'));
-        let url = newFilterUrl.value;
-        let radios = Array.from(document.querySelectorAll('input[name=urlFilterAction]'));
-        let action;
-        for(let radio of radios) {
-          if(radio.checked) {
-            action = parseInt(radio.getAttribute('value'));
-            break;
-          }
-        }
+        const newFilterUrl = document.getElementById('newFilterUrl');
+        const defaultPosition = document.getElementById('defaultPosition');
+        const positionLeftNode = document.getElementById('windowPositionLeft');
+        const positionTopNode = document.getElementById('windowPositionTop');
+        const widthNode = document.getElementById('windowWidth');
+        const heightNode = document.getElementById('windowHeight');
+        const index = parseInt(newFilterUrl.getAttribute('index'));
+        const url = newFilterUrl.value;
+        const position = defaultPosition.value !== '5' ?
+          defaultPosition.value :
+          { left: Number(positionLeftNode.value), top: Number(positionTopNode.value) };
+        const size = { width: Number(widthNode.value), height: Number(heightNode.value) };
+
         if(index === -1) {
-          addUrlFilter(url, action);
-          currentPrefs.urlFilterList.push({url: url, action: action});
+          addUrlFilter(url, position, size);
+          currentPrefs.urlFilterList.push({url, position, size});
         }
         else {
-          modefyUrlFilter(url, action, index);
+          modefyUrlFilter(url, position, size, index);
         }
         sendVelueChangeMessage('urlFilterList', currentPrefs.urlFilterList);
         hideScreenMask();
@@ -326,7 +373,7 @@ const startup = () => {
   });
 
   document.getElementById('btnAddUrlFilter').addEventListener('click', event => {
-    showUrlFilterEditor('', -1, -1);
+    showUrlFilterEditor('', '0', {width: 500, height: 400}, -1);
   }, false);
   document.getElementById('btnMoveUp').addEventListener('click', event => {
     moveUrlFilterPos(-1);
@@ -335,9 +382,12 @@ const startup = () => {
     moveUrlFilterPos(+1);
   }, false);
 
-  document.getElementById('newFilterUrl').addEventListener('input', event => {
-    checkFilterEditorInput();
-  }, false);
+  document.getElementById('newFilterUrl').addEventListener('input', checkFilterEditorInput, false);
+  document.getElementById('windowPositionLeft').addEventListener('input', checkFilterEditorInput, false);
+  document.getElementById('windowPositionTop').addEventListener('input', checkFilterEditorInput, false);
+  document.getElementById('windowWidth').addEventListener('input', checkFilterEditorInput, false);
+  document.getElementById('windowHeight').addEventListener('input', checkFilterEditorInput, false);
+  document.getElementById('defaultPosition').addEventListener('change', onDefaultPositionChange);
 }
 
 const setValueToElem = (id, value) => {
@@ -361,7 +411,7 @@ const setValueToElem = (id, value) => {
     }
     else if(elemType === 'listBox') {
       for(let i = 0; i < value.length; ++i) {
-        addUrlFilter(value[i].url, value[i].action, i);
+        addUrlFilter(value[i].url, value[i].position, value[i].size, i);
       }
     }
   }
@@ -374,10 +424,8 @@ const getValueFromElem = (id) => {
 const sendVelueChangeMessage = (id, value) => {
   if(value === undefined) {
     delete currentPrefs[id];
-    //console.log('sendVelueChangeMessage(0): id = ' + id);
   }
   else if(typeof value === 'object') {
-    //console.log('sendVelueChangeMessage(1): id = ' + id + ', value = ' + JSON.stringify(value));
     let update = {};
     update[id] = value;
     chrome.storage.local.set(update);
@@ -385,7 +433,6 @@ const sendVelueChangeMessage = (id, value) => {
   else {
     if(currentPrefs[id] !== value) {
       currentPrefs[id] = value;
-      //console.log('sendVelueChangeMessage(2): id = ' + id + ', value = ' + value + ', type = ' + typeof(value));
       let update = {};
       update[id] = value;
       chrome.storage.local.set(update);
@@ -418,6 +465,24 @@ const handleVelueChange = (id) => {
   }
 }
 
+const onDefaultPositionChange = () => {
+  let defaultPosition = document.getElementById('defaultPosition');
+  let elems = Array.from(document.querySelectorAll('.windowPosition'));
+
+  if(defaultPosition.value === '5') {
+    elems.forEach(tag => {
+      tag.classList.add('show');
+      tag.classList.remove('hidden');
+    });
+  } else {
+    elems.forEach(tag => {
+      tag.classList.add('hidden');
+      tag.classList.remove('show');
+    });
+  }
+  checkFilterEditorInput();
+}
+
 const init = preferences => {
   currentPrefs = preferences;
   for(let p in preferences) {
@@ -425,7 +490,7 @@ const init = preferences => {
     handleVelueChange(p);
   }
   document.title = chrome.i18n.getMessage('optionPageTitle');
-  let l10nTags = Array.from(document.querySelectorAll('[data-l10n-id]'));
+  const l10nTags = Array.from(document.querySelectorAll('[data-l10n-id]'));
   l10nTags.forEach(tag => {
     tag.textContent = chrome.i18n.getMessage(tag.getAttribute('data-l10n-id'));
   });
@@ -460,7 +525,7 @@ window.addEventListener('contextmenu', event => {
 }, true);
 
 window.addEventListener('keydown', event => {
-  if(event.keyCode === 27) {
+  if(event.key === 'Escape') {
     hideScreenMask();
   }
 }, true);
